@@ -64,6 +64,7 @@ class NanoChain extends BaseChain {
 
         // Verify all prefix blocks that we don't know yet.
         for (let i = 0; i < proof.prefix.length; i++) {
+            if (i != 0 && i % 2000 === 0) await new Promise(resolve => setTimeout(resolve, 0));
             const block = proof.prefix.blocks[i];
             const hash = block.hash();
             const knownBlock = await this._store.getBlock(hash);
