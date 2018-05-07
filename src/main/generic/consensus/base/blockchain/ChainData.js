@@ -44,8 +44,8 @@ class ChainData {
         Assert.that(this._head.header._pow instanceof Hash, 'Expected cached PoW hash');
         return {
             _head: this._head.toLight().serialize(),
-            _totalDifficulty: this._totalDifficulty.toString(),
-            _totalWork: this._totalWork.toString(),
+            _totalDifficulty: [this._totalDifficulty.s, this._totalDifficulty.e, this._totalDifficulty.c],
+            _totalWork: [this._totalWork.s, this._totalWork.e, this._totalWork.c],
             _superBlockCounts: this._superBlockCounts.array,
             _onMainChain: this._onMainChain,
             _mainChainSuccessor: this._mainChainSuccessor ? this._mainChainSuccessor.serialize() : null,
@@ -66,10 +66,27 @@ class ChainData {
         head.header._hash = hashBase64 ? Hash.fromBase64(hashBase64) : null;
         const superBlockCounts = new SuperBlockCounts(obj._superBlockCounts);
         const successor = obj._mainChainSuccessor ? Hash.unserialize(new SerialBuffer(obj._mainChainSuccessor)) : null;
+        let totalDifficulty, totalWork;
+        if (typeof obj._totalDifficulty == 'object') {
+            totalDifficulty = new BigNumber();
+            totalDifficulty.s = obj._totalDifficulty[0];
+            totalDifficulty.e = obj._totalDifficulty[1];
+            totalDifficulty.c = obj._totalDifficulty[2];
+        } else {
+            totalDifficulty = new BigNumber(obj._totalDifficulty);
+        }
+        if (typeof obj._totalWork == 'object') {
+            totalWork = new BigNumber();
+            totalWork.s = obj._totalWork[0];
+            totalWork.e = obj._totalWork[1];
+            totalWork.c = obj._totalWork[2];
+        } else {
+            totalWork = new BigNumber(obj._totalWork);
+        }
         return new ChainData(
             head,
-            new BigNumber(obj._totalDifficulty),
-            new BigNumber(obj._totalWork),
+            totalDifficulty,
+            totalWork,
             superBlockCounts,
             obj._onMainChain,
             successor
