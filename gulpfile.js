@@ -267,6 +267,7 @@ const sources = {
 
         './src/main/platform/browser/worker/GenesisConfig.js',
         './src/main/generic/utils/array/ArrayUtils.js',
+        './src/main/generic/utils/array/HashSet.js',
         './src/main/generic/utils/assert/Assert.js',
         './src/main/generic/utils/buffer/SerialBuffer.js',
         './src/main/generic/utils/merkle/MerkleTree.js',
@@ -288,6 +289,9 @@ const sources = {
         './src/main/generic/consensus/base/block/BlockBody.js',
         './src/main/generic/consensus/base/block/BlockUtils.js',
         './src/main/generic/consensus/base/block/Block.js',
+        './src/main/generic/consensus/base/blockchain/BlockChain.js',
+        './src/main/generic/consensus/base/blockchain/HeaderChain.js',
+        './src/main/generic/consensus/base/blockchain/ChainProof.js',
         './src/main/generic/consensus/base/transaction/Transaction.js',
         './src/main/generic/consensus/base/transaction/SignatureProof.js',
         './src/main/generic/consensus/base/transaction/BasicTransaction.js',

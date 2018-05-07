@@ -35,6 +35,19 @@ class ChainProof {
      * @returns {Promise.<boolean>}
      */
     async verify() {
+        if (this._valid === undefined) {
+            if (this._prefix.length + this._suffix.length < 500 || !IWorker.areWorkersAsync) {
+                // worker overhead doesn't pay off for small proofs
+                this._valid = this._verify();
+            } else {
+                const worker = await CryptoWorker.getInstanceAsync();
+                this._valid = await worker.chainProofVerify(this.serialize(), GenesisConfig.GENESIS_HASH.serialize(), GenesisConfig.NETWORK_ID);
+            }
+        }
+        return this._valid;
+    }
+
+    async _verify() {
         // Check that the prefix chain is anchored.
         if (!this._prefix.isAnchored()) {
             return false;

@@ -158,6 +158,25 @@ class CryptoWorkerImpl extends IWorker.Stub(CryptoWorker) {
         const bodyHash = block.body.hash();
         return { valid: valid, pow: pow.serialize(), interlinkHash: interlinkHash.serialize(), bodyHash: bodyHash.serialize() };
     }
+
+    /**
+     * @param {Uint8Array} chainProof
+     * @param {Uint8Array} genesisHash
+     * @param {number} networkId
+     * @returns {Promise.<boolean>}
+     */
+    async chainProofVerify(chainProof, genesisHash, networkId) {
+        // The worker only uses a stub genesis config.
+        GenesisConfig = {
+            GENESIS_HASH: Hash.unserialize(new SerialBuffer(genesisHash)),
+            NETWORK_ID: networkId
+        };
+
+        const proof = ChainProof.unserialize(new SerialBuffer(chainProof));
+        const valid = await proof._verify();
+
+        return valid;
+    }
 }
 
 IWorker.prepareForWorkerUse(CryptoWorker, new CryptoWorkerImpl());
