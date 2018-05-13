@@ -125,14 +125,19 @@ class WebSocketConnector extends Observable {
      * @returns {void}
      */
     _onConnection(ws) {
-        const netAddress = NetAddress.fromIP(ws._socket.remoteAddress, true);
-        const conn = new NetworkConnection(new WebSocketDataChannel(ws), Protocol.WS, netAddress, /*peerAddress*/ null);
+        try {
+            const netAddress = NetAddress.fromIP(ws._socket.remoteAddress, true);
+            const conn = new NetworkConnection(new WebSocketDataChannel(ws), Protocol.WS, netAddress, /*peerAddress*/ null);
 
-        /**
-        * Tell listeners that an initial connection to a peer has been established.
-        * @event WebSocketConnector#connection
-        */
-        this.fire('connection', conn);
+            /**
+             * Tell listeners that an initial connection to a peer has been established.
+             * @event WebSocketConnector#connection
+             */
+            this.fire('connection', conn);
+        } catch (e) {
+            Log.e(WebSocketConnector, `Error on connection to ${ws._socket.remoteAddress}: ${e.message || e}`);
+            ws.close();
+        }
     }
 }
 WebSocketConnector.CONNECT_TIMEOUT = 1000 * 5; // 5 seconds

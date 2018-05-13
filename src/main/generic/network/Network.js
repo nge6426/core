@@ -270,7 +270,7 @@ class Network extends Observable {
         // recycle
         if (this.peerCount > Network.PEER_COUNT_RECYCLING_ACTIVE) {
             // recycle 1% at PEER_COUNT_RECYCLING_ACTIVE, 20% at PEER_COUNT_MAX
-            const percentageToRecycle = (this.peerCount - Network.PEER_COUNT_RECYCLING_ACTIVE) * 0.19 / (Network.PEER_COUNT_MAX - Network.PEER_COUNT_RECYCLING_ACTIVE) + 0.01;
+            const percentageToRecycle = (this.peerCount - Network.PEER_COUNT_RECYCLING_ACTIVE) * (Network.RECYCLING_PERCENTAGE_MAX - Network.RECYCLING_PERCENTAGE_MIN) / (Network.PEER_COUNT_MAX - Network.PEER_COUNT_RECYCLING_ACTIVE) + Network.RECYCLING_PERCENTAGE_MIN;
             const connectionsToRecycle = Math.ceil(this.peerCount * percentageToRecycle);
             this._scorer.recycleConnections(connectionsToRecycle, CloseType.PEER_CONNECTION_RECYCLED, 'Peer connection recycled');
         }
@@ -397,6 +397,21 @@ Network.PEER_COUNT_MAX = PlatformUtils.isBrowser() ? 15 : 10000;
  * @type {number}
  * @constant
  */
+Network.PEER_COUNT_WS_MAX = 4000;
+/**
+ * @type {number}
+ * @constant
+ */
+Network.PEER_COUNT_RTC_MAX = PlatformUtils.isBrowser() ? 6 : 3000;
+/**
+ * @type {number}
+ * @constant
+ */
+Network.PEER_COUNT_DUMB_MAX = 3000;
+/**
+ * @type {number}
+ * @constant
+ */
 Network.INBOUND_PEER_COUNT_PER_SUBNET_MAX = PlatformUtils.isBrowser() ? 2 : 100;
 /**
  * @type {number}
@@ -423,6 +438,16 @@ Network.IPV6_SUBNET_MASK = 96;
  * @constant
  */
 Network.PEER_COUNT_RECYCLING_ACTIVE = PlatformUtils.isBrowser() ? 5 : 1000;
+/**
+ * @type {number}
+ * @constant
+ */
+Network.RECYCLING_PERCENTAGE_MIN = 0.01;
+/**
+ * @type {number}
+ * @constant
+ */
+Network.RECYCLING_PERCENTAGE_MAX = 0.20;
 /**
  * @type {number}
  * @constant
@@ -463,8 +488,20 @@ Network.SCORE_INBOUND_EXCHANGE = 0.5;
  * @constant
  */
 Network.CONNECT_THROTTLE = 1000; // 1 second
-
+/**
+ * @type {number}
+ * @constant
+ */
 Network.ADDRESS_REQUEST_CUTOFF = 250;
+/**
+ * @type {number}
+ * @constant
+ */
 Network.ADDRESS_REQUEST_PEERS = 2;
+/**
+ * @type {number}
+ * @constant
+ */
+Network.SIGNALING_ENABLED = 1;
 
 Class.register(Network);

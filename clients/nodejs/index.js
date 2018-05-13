@@ -198,10 +198,10 @@ const $ = {};
     });
 
     $.network.on('peer-joined', (peer) => {
-        Nimiq.Log.i(TAG, `Connected to ${peer.peerAddress.toString()}`);
+        Nimiq.Log.i(TAG, `Connected to ${peer.peerAddress.toString()} ${peer.netAddress}`);
     });
     $.network.on('peer-left', (peer) => {
-        Nimiq.Log.i(TAG, `Disconnected from ${peer.peerAddress.toString()}`);
+        Nimiq.Log.i(TAG, `Disconnected from ${peer.peerAddress.toString()} ${peer.netAddress}`);
     });
 
     if (!config.passive) {

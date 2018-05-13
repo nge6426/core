@@ -446,8 +446,6 @@ class ConnectionPool extends Observable {
 
         // Create peer channel.
         const channel = new PeerChannel(conn);
-        channel.on('signal', msg => this._signalProcessor.onSignal(channel, msg));
- 
         peerConnection.peerChannel = channel;
 
         // Create network agent.
@@ -493,6 +491,28 @@ class ConnectionPool extends Observable {
     }
 
     /**
+     * @param {PeerAddress} peerAddress
+     * @returns {boolean}
+     * @private
+     */
+    _exceedsMaxPeerCount(peerAddress) {
+        if (this.peerCount >= Network.PEER_COUNT_MAX) {
+            return true;
+        }
+
+        switch (peerAddress.protocol) {
+            case Protocol.WS:
+                return this.peerCountWs >= Network.PEER_COUNT_WS_MAX;
+            case Protocol.RTC:
+                return this.peerCountRtc >= Network.PEER_COUNT_RTC_MAX;
+            case Protocol.DUMB:
+                return this.peerCountDumb >= Network.PEER_COUNT_DUMB_MAX;
+        }
+
+        return false;
+    }
+
+    /**
      * Handshake with this peer was successful.
      * @fires ConnectionPool#peer-joined
      * @fires ConnectionPool#peers-changed
@@ -503,11 +523,12 @@ class ConnectionPool extends Observable {
      * @private
      */
     _onHandshake(peerConnection, peer) {
+        const peerCountExceeded = this._exceedsMaxPeerCount(peer.peerAddress);
         if (peerConnection.networkConnection.inbound) {
             // Re-check allowInboundExchange as it might have changed.
-            if (this.peerCount >= Network.PEER_COUNT_MAX && !this._allowInboundExchange) {
+            if (peerCountExceeded && !this._allowInboundExchange) {
                 peerConnection.peerChannel.close(CloseType.MAX_PEER_COUNT_REACHED,
-                    `max peer count reached (${Network.PEER_COUNT_MAX})`);
+                    `max peer count reached`);
                 return;
             }
 
@@ -563,7 +584,7 @@ class ConnectionPool extends Observable {
         // Handshake accepted.
 
         // Check if we need to recycle a connection.
-        if (this.peerCount >= Network.PEER_COUNT_MAX) {
+        if (peerCountExceeded) {
             this.fire('recycling-request');
         }
 
@@ -576,6 +597,12 @@ class ConnectionPool extends Observable {
  
         this._updateConnectedPeerCount(peerConnection, 1);
 
+        // Setup signal forwarding.
+        if (Network.SIGNALING_ENABLED) {
+            peerConnection.peerChannel.on('signal', msg => this._signalProcessor.onSignal(peerConnection.peerChannel, msg));
+        }
+
+        // Mark address as established.
         this._addresses.established(peer.channel, peer.peerAddress);
 
         // Let listeners know about this peer.
