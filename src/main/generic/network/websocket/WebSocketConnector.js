@@ -126,6 +126,8 @@ class WebSocketConnector extends Observable {
      */
     _onConnection(ws) {
         try {
+            Log.v(WebSocketConnector, `Inbound connection from ${ws._socket.remoteAddress}, origin '${ws.upgradeReq.headers.origin}'`);
+
             const netAddress = NetAddress.fromIP(ws._socket.remoteAddress, true);
             const conn = new NetworkConnection(new WebSocketDataChannel(ws), Protocol.WS, netAddress, /*peerAddress*/ null);
 
