@@ -125,6 +125,7 @@ class MockWebSocket extends MockGenericSender {
         super.link(channel);
         this._socket = channel.localAddress ? { remoteAddress: channel.localAddress } : undefined;
         this._readyState = DataChannel.ReadyState.OPEN;
+        this.upgradeReq = { headers: {} };
     }
 
     /**
