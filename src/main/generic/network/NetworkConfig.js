@@ -10,9 +10,13 @@ class NetworkConfig {
 
     /**
      * @constructor
+     * @param {number} protocol
      * @param {number} protocolMask
      */
-    constructor(protocolMask) {
+    constructor(protocol, protocolMask) {
+        /** @type {number} */
+        this._protocol = protocol;
+
         /** @type {number} */
         this._protocolMask = protocolMask;
 
@@ -70,6 +74,13 @@ class NetworkConfig {
 
         this._keyPair = keys;
         this._peerId = keys.publicKey.toPeerId();
+    }
+
+    /**
+     * @returns {number}
+     */
+    get protocol() {
+        return this._protocol;
     }
 
     /**
@@ -142,7 +153,7 @@ class WsNetworkConfig extends NetworkConfig {
      * @param {string} cert
      */
     constructor(host, port, key, cert) {
-        super(Protocol.WS);
+        super(Protocol.WS, Protocol.WS);
         this._host = host;
         this._port = port;
         this._key = key;
@@ -191,7 +202,7 @@ class RtcNetworkConfig extends NetworkConfig {
      * @constructor
      */
     constructor() {
-        super(Protocol.WS | Protocol.RTC);
+        super(Protocol.RTC, Protocol.WS | Protocol.RTC);
         this._rtcConfig = {
             iceServers: [
                 {urls: 'stun:stun.l.google.com:19302'},
@@ -231,7 +242,7 @@ class DumbNetworkConfig extends NetworkConfig {
      * @constructor
      */
     constructor() {
-        super(Protocol.WS);
+        super(Protocol.DUMB, Protocol.WS);
     }
 
     /**
