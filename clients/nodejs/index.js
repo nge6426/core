@@ -5,6 +5,7 @@ const JsonRpcServer = require('./modules/JsonRpcServer.js');
 const UiServer = require('./modules/UiServer.js');
 const MetricsServer = require('./modules/MetricsServer.js');
 const config = require('./modules/Config.js')(argv);
+const openBrowserTab = require('./modules/OpenBrowserTab.js');
 
 if ((!config.host || !config.port || !config.tls.key || !config.tls.cert) && !config.dumb || argv.help) {
     console.log(
@@ -285,6 +286,10 @@ const $ = {};
 
     if (config.uiServer.enabled) {
         $.uiServer = new UiServer(config.uiServer);
+        openBrowserTab(`http://localhost:${config.uiServer.port}#port=${config.rpcServer.port}&token=${encodeURIComponent($.rpcServer.accessToken)}`, () => {
+            Nimiq.Log.w(TAG, 'Failed to automatically open the UI in your web browser.');
+            Nimiq.Log.w(TAG, `The UI can be reached at http://localhost:${config.uiServer.port}#port=${config.rpcServer.port}`);
+        });
     }
 
 })().catch(e => {
