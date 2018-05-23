@@ -5,7 +5,7 @@ const JsonRpcServer = require('./modules/JsonRpcServer.js');
 const UiServer = require('./modules/UiServer.js');
 const MetricsServer = require('./modules/MetricsServer.js');
 const config = require('./modules/Config.js')(argv);
-const openBrowserTab = require('./modules/OpenBrowserTab.js');
+const openBrowserTab = require('./modules/NodeUtils.js').openBrowserTab;
 
 if ((!config.host || !config.port || !config.tls.key || !config.tls.cert) && !config.dumb || argv.help) {
     console.log(
