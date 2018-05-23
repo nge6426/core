@@ -417,7 +417,7 @@ class JsonRpcServer {
                 this._miner.disconnect();
             }
         }
-        return this._miner.working;
+        return this._minerConfig.enabled;
     }
 
     hashrate() {
