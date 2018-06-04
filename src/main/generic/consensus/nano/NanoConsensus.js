@@ -16,9 +16,29 @@ class NanoConsensus extends BaseConsensus {
     }
 
     /**
+     * @param {Array.<Address>} newAddresses
+     */
+    subscribeAccounts(newAddresses) {
+        const addresses = new HashSet();
+        addresses.addAll(this._subscription.addresses);
+        addresses.addAll(newAddresses);
+        this._changeSubscribedAccounts(addresses.values());
+    }
+
+    /**
+     * @param {Array.<Address>} addressesToRemove
+     */
+    unsubscribeAccounts(addressesToRemove) {
+        const addresses = new HashSet();
+        addresses.addAll(this._subscription.addresses);
+        addresses.removeAll(addressesToRemove);
+        this._changeSubscribedAccounts(addresses.values());
+    }
+
+    /**
      * @param {Array.<Address>} addresses
      */
-    subscribeAccounts(addresses) {
+    _changeSubscribedAccounts(addresses) {
         this.subscribe(Subscription.fromAddresses(addresses));
         this._mempool.evictExceptAddresses(addresses);
         for (const /** @type {NanoConsensusAgent} */ agent of this._agents.valueIterator()) {
