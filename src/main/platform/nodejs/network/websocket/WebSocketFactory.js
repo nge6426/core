@@ -8,17 +8,26 @@ class WebSocketFactory {
         const port = networkConfig.port;
         const sslConfig = networkConfig.sslConfig;
 
-        const options = {
-            key: fs.readFileSync(sslConfig.key),
-            cert: fs.readFileSync(sslConfig.cert)
-        };
+        let server;
 
-        const httpsServer = https.createServer(options, (req, res) => {
-            res.writeHead(200);
-            res.end('Nimiq NodeJS Client\n');
-        }).listen(port);
+        if (sslConfig) {
+            const options = {
+                key: fs.readFileSync(sslConfig.key),
+                cert: fs.readFileSync(sslConfig.cert)
+            };
 
-        return new WebSocket.Server({ server: httpsServer });
+            server = https.createServer(options, (req, res) => {
+                res.writeHead(200);
+                res.end('Nimiq NodeJS Client\n');
+            }).listen(port);
+        } else {
+            server = http.createServer((req, res) => {
+                res.writeHead(200);
+                res.end('Nimiq NodeJS Client\n');
+            }).listen(port);
+        }
+
+        return new WebSocket.Server({ server: server });
     }
 
     /**
