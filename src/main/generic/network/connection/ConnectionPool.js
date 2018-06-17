@@ -709,7 +709,7 @@ class ConnectionPool extends Observable {
      * @private
      */
     _onConnectError(peerAddress, reason) {
-        Log.d(ConnectionPool, () => `Connection to ${peerAddress} failed` + (typeof reason === 'string' ? ` - ${reason}` : (typeof reason === 'object' ? ` - ${JSON.stringify(reason)}` : '')));
+        Log.d(ConnectionPool, () => `Connection to ${peerAddress} failed` + (typeof reason === 'string' ? ` - ${reason}` : ''));
 
         const peerConnection = this.getConnectionByPeerAddress(peerAddress);
         Assert.that(!!peerConnection, `PeerAddress not stored ${peerAddress}`);
