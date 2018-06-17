@@ -156,5 +156,5 @@ class WebSocketConnector extends Observable {
         this.fire('connection', conn);
     }
 }
-WebSocketConnector.CONNECT_TIMEOUT = 1000 * 5; // 5 seconds
+WebSocketConnector.CONNECT_TIMEOUT = 1000 * 20; // 20 seconds
 Class.register(WebSocketConnector);
